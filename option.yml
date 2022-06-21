@@ -1,0 +1,63 @@
+#
+# @Author: wjm
+# @Date: 2019-10-13 21:45:10
+# @LastEditTime: 2019-10-13 21:46:06
+# @Description: file content
+# 
+
+name: Net
+algorithm: MHAN #[SMSR, MHAN, HAN, CSNLA, SAN, RCAN, EDSR, RDN, DBPN, SRResNet, SRCNN]
+nEpochs: 1000
+gpu_mode: False
+save_best: False
+debug: False
+gpus: [0, 1]
+threads: 8
+
+seed: 123
+checkpoint: checkpoint
+data_dir: ./dataset
+train_dataset: train
+valid_dataset: test
+
+test:
+  algorithm: RDN #[SMSR, MHAN, HAN, CSNLA, SAN, RCAN, EDSR, RDN, DBPN, SRResNet, SRCNN]
+  type: test #[test, eval]
+  data_dir: ./dataset
+  test_dataset: valid
+  model: SRResNet_4_1610718108/latest.pth
+
+pretrain:
+  pretrained: False
+  pre_sr: 1592134968/best.pth
+  pre_folder: checkpoint
+
+data:
+  upsacle:  4
+  batch_size: 16
+  patch_size: 48
+  data_augmentation: False                                                                                                                                                                                               
+  n_colors: 3
+  rgb_range: 255
+  normalize : False
+  noise: 0
+  blur: False
+  blur_type: iso_gaussian #[aniso_gaussian, iso_gaussian]
+  
+
+schedule:
+  lr: 1e-4
+  decay: '500' #e.g. '500-1000'
+  gamma: 0.1
+  optimizer: ADAM #[ADAM, SGD, RMSprop]
+  momentum: 0.9 #SGD momentum
+  beta1: 0.9 #ADAM beta
+  beta2: 0.999 #ADAM beta
+  epsilon: 1e-8 #ADAM epsilon
+  alpha: 0.9 #RMSprop alpha
+  weight_dency: 0
+  gclip: 0.4
+  loss: L1 #[MSE, L1, VGG22, VGG54, Cycle]
+  use_YCbCr: False
+  use_apex: False
+
