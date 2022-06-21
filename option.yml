@@ -6,7 +6,7 @@
 # 
 
 name: Net
-algorithm: MHAN #[SMSR, MHAN, HAN, CSNLA, SAN, RCAN, EDSR, RDN, DBPN, SRResNet, SRCNN]
+algorithm: LDUM #[SMSR, MHAN, HAN, CSNLA, SAN, RCAN, EDSR, RDN, DBPN, SRResNet, SRCNN]
 nEpochs: 1000
 gpu_mode: False
 save_best: False

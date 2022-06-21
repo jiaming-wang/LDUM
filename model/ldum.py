@@ -3,9 +3,8 @@
 '''
 @Author: wjm
 @Date: 2020-01-29 17:54:45
-LastEditTime: 2021-10-08 09:23:38
-@Description: batch_size=16, patch_size=32, L1 loss, lr=1e-4, epoch=5000, decay=2500, ADAM
-official: batch_size=16, patch_size=32, L1 loss, lr=1e-4, epoch=1000, decay=200, ADAM
+LastEditTime: 2022-06-21 15:56:09
+@Description: 
 '''
 
 import os
@@ -86,10 +85,7 @@ class Net(nn.Module):
 
     def forward(self, x):
         lr = x
-         ## itera 0
-        # h_0 = self.up(self.body(self.head(x)))
-        # h_0 = self.output_conv(h_0)
-
+        ## itera 0
         x = self.sfe1(x)
         x_0 = self.sfe2(x)
         x_1 = self.RDB1(x_0)
@@ -102,11 +98,11 @@ class Net(nn.Module):
         x = self.up(x)
 
         h_0 = self.output_conv(x)
-        # x = h_0
+
         r_0 =h_0 - F.interpolate(lr, scale_factor=4, mode='bicubic')
 
         ## itera 1
-        # r_1 = self.lap_f(h_0) 
+
         r_1 = r_0
         r_1 = self.res(r_1)
         r = self.prox1(r_1)
@@ -135,13 +131,11 @@ class unfolding_block(nn.Module):
 
         ## prox
         prox1 = [
-            #RCAB(32, 3, 16, act=nn.ReLU(True), res_scale=1)
             ResnetBlock_triple(feature_num, 3, 1, 1, False, 0.1, activation='relu', norm=None, middle_size=feature_num, output_size=feature_num) for _ in range(1)
         ]
         self.prox1 = nn.Sequential(*prox1)
 
         prox2 = [
-            #RCAB(3, 3, 16, act=nn.ReLU(True), res_scale=1)
             ResnetBlock_triple(3, 3, 1, 1, False, 0.1, activation='relu', norm=None, middle_size=feature_num, output_size=3) for _ in range(1)
         ]
         self.prox2 = nn.Sequential(*prox2)
@@ -179,7 +173,6 @@ class unfolding_block(nn.Module):
 
         self.up = Conv_up(3, 4)
         self.down = Conv_down(3, 4)
-        # self.down1 = Conv_down(3, 4)
 
     def candy_f(self, im):
         sobel_kernel = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]], dtype='float32') 
@@ -213,13 +206,7 @@ class unfolding_block(nn.Module):
     def forward(self, x, r, lr):   
 
         ## Res
-        ##2
-        # tem = self.down(x) - lr
-        ##1
-        # tem = F.interpolate(x, scale_factor=1/4, mode='bicubic') - lr
-        ## 3
-        # tem = self.lap_f(F.interpolate(x, scale_factor=1/4, mode='bicubic'))
-        ## 4
+        tem = F.interpolate(x, scale_factor=1/4, mode='bicubic') - lr
         tem = self.candy_f(F.interpolate(x, scale_factor=1/4, mode='bicubic'))
         r_h = self.res(r)
         r_h = self.down(r_h)
